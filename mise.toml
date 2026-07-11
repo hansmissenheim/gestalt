@@ -3,8 +3,8 @@ python = "3.13"
 uv = "latest"
 
 [tasks.install]
-description = "Install dependencies"
-run = "uv sync"
+description = "Install dependencies and configure git hooks"
+run = ["uv sync", "git config core.hooksPath .githooks"]
 
 [tasks.serve]
 description = "Start local dev server with live reload"
