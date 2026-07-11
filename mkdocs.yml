@@ -1,0 +1,12 @@
+site_name: Gestalt
+site_url: https://hansmissenheim.github.io/gestalt/
+
+theme:
+  name: material
+
+plugins:
+  - search
+
+markdown_extensions:
+  - toc:
+      permalink: true
