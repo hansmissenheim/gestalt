@@ -1,0 +1,19 @@
+[tools]
+python = "3.13"
+uv = "latest"
+
+[tasks.install]
+description = "Install dependencies"
+run = "uv sync"
+
+[tasks.serve]
+description = "Start local dev server with live reload"
+run = "uv run mkdocs serve"
+
+[tasks.build]
+description = "Build static site into site/"
+run = "uv run mkdocs build"
+
+[tasks.clean]
+description = "Remove build artifacts"
+run = "rm -rf site/"
