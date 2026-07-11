@@ -1,0 +1,54 @@
+name: Enforce push policy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  validate-direct-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commits follow docs-only policy
+        run: |
+          FAILED=0
+
+          # Get commits in this push
+          COMMITS=$(git rev-list ${{ github.event.before }}..${{ github.event.after }} 2>/dev/null || echo "${{ github.event.after }}")
+
+          for COMMIT in $COMMITS; do
+            MSG=$(git log --format=%s -n 1 "$COMMIT")
+
+            # Check commit message prefix
+            if ! echo "$MSG" | grep -qi "^docs:"; then
+              echo "❌ Commit $COMMIT does not start with 'docs:':"
+              echo "   Message: $MSG"
+              FAILED=1
+              continue
+            fi
+
+            # Check only docs/ files are modified
+            FILES=$(git diff-tree --no-commit-id --name-only -r "$COMMIT")
+            for FILE in $FILES; do
+              case "$FILE" in
+                docs/*) ;;
+                *)
+                  echo "❌ Commit $COMMIT modifies non-docs file: $FILE"
+                  FAILED=1
+                  ;;
+              esac
+            done
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "⚠️  Direct pushes to main must only contain docs: prefixed commits"
+            echo "   that modify files exclusively in docs/."
+            echo "   Please use a pull request for other changes."
+            exit 1
+          fi
+
+          echo "✅ All commits are valid docs-only changes."

@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# Pre-push hook: blocks direct pushes to main unless ALL commits are:
+#   1. Prefixed with "docs:" in the commit message
+#   2. Only modify files under docs/
+#
+# To bypass in emergencies: git push --no-verify
+
+PROTECTED_BRANCH="main"
+
+while read local_ref local_sha remote_ref remote_sha; do
+  # Only protect pushes to main
+  if [ "$remote_ref" != "refs/heads/$PROTECTED_BRANCH" ]; then
+    continue
+  fi
+
+  # Determine commit range
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    # New branch push — check all commits
+    commits=$(git rev-list "$local_sha" --not --remotes=origin 2>/dev/null)
+  else
+    commits=$(git rev-list "$remote_sha..$local_sha" 2>/dev/null)
+  fi
+
+  if [ -z "$commits" ]; then
+    continue
+  fi
+
+  for commit in $commits; do
+    # Check commit message prefix
+    msg=$(git log --format=%s -n 1 "$commit")
+    if ! echo "$msg" | grep -qi "^docs:"; then
+      echo "❌ BLOCKED: Commit $commit does not start with \"docs:\":"
+      echo "   Message: $msg"
+      echo ""
+      echo "   Direct pushes to main require \"docs: ...\" prefix and only docs/ changes."
+      echo "   For other changes, please use a pull request."
+      echo "   To bypass: git push --no-verify"
+      exit 1
+    fi
+
+    # Check that only docs/ files are modified
+    files=$(git diff-tree --no-commit-id --name-only -r "$commit")
+    for file in $files; do
+      case "$file" in
+        docs/*) ;;
+        *)
+          echo "❌ BLOCKED: Commit $commit modifies files outside docs/:"
+          echo "   File: $file"
+          echo "   Message: $msg"
+          echo ""
+          echo "   Direct pushes to main only allow changes to docs/ files."
+          echo "   For other changes, please use a pull request."
+          echo "   To bypass: git push --no-verify"
+          exit 1
+          ;;
+      esac
+    done
+  done
+done
+
+exit 0
