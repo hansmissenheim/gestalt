@@ -3,6 +3,14 @@ site_url: https://hansmissenheim.github.io/gestalt/
 
 theme:
   name: material
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+    - search.suggest
 
 plugins:
   - search
@@ -10,3 +18,43 @@ plugins:
 markdown_extensions:
   - toc:
       permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Windows:
+    - Overview: windows/index.md
+    - Applications: windows/apps.md
+    - Settings: windows/settings.md
+    - Customization: windows/customization.md
+    - Development: windows/development.md
+    - SSH: windows/ssh.md
+  - WSL:
+    - Overview: wsl/index.md
+    - Arch Linux: wsl/arch.md
+    - Ubuntu: wsl/ubuntu.md
+  - macOS:
+    - Overview: macos/index.md
+    - Applications: macos/apps.md
+    - Settings: macos/settings.md
+    - Development: macos/development.md
+    - SSH: macos/ssh.md
+  - Unraid:
+    - Overview: unraid/index.md
+    - Setup: unraid/setup.md
+    - Docker: unraid/docker.md
+    - VMs: unraid/vms.md
+  - Devices:
+    - Overview: devices/index.md
+    - Retroid Pocket 4: devices/retroid-pocket-4.md
