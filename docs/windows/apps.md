@@ -18,6 +18,9 @@ Install Scoop, then use it for CLI tools and fonts.
 ```powershell
 ```
 
+!!! note
+    Scoop shims don't work over SSH until Redirection Guard is turned off for `sshd`. See [SSH](ssh.md#redirection-guard).
+
 ### Buckets
 
 ### Packages
