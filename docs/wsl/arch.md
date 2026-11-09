@@ -29,12 +29,18 @@ wsl --version
 ### Distro
 
 ```powershell
-wsl --install archlinux --no-launch
+wsl --install archlinux
 wsl --set-default archlinux
-wsl -d archlinux
 ```
 
-This opens a root shell; the rest of the page runs inside it.
+The first launch runs the image's out-of-box script (`/usr/lib/wsl/first-setup.sh`), which generates and populates the pacman keyring, then drops into a root shell. The rest of the page runs inside it.
+
+!!! warning
+    `wsl --install archlinux --no-launch` followed by `wsl -d archlinux -u root` skips that script and leaves the keyring empty. Run it by hand in that case:
+
+    ```bash
+    /usr/lib/wsl/first-setup.sh
+    ```
 
 ## Initial Setup
 
@@ -52,7 +58,7 @@ visudo -c
 
 ### wsl.conf
 
-`/etc/wsl.conf` turns on systemd and makes `hans` the login user:
+The image ships `/etc/wsl.conf` with systemd already on; add a `[user]` section to make `hans` the login user:
 
 ```ini title="/etc/wsl.conf"
 [boot]
@@ -71,7 +77,7 @@ wsl -d archlinux
 
 ## Package Manager
 
-The image initializes and populates the pacman keyring on first boot (`pacman-init.service`), so there's no manual `pacman-key --init`. The first full update happened in [Initial Setup](#initial-setup); later ones:
+The keyring comes from the first-launch script (see [Distro](#distro)), so there's no manual `pacman-key --init`. The image ships two active mirrors in `/etc/pacman.d/mirrorlist`. The first full update happened in [Initial Setup](#initial-setup); later ones:
 
 ```bash
 sudo pacman -Syu
