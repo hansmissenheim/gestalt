@@ -2,9 +2,11 @@
 
 ## WSL
 
-Install WSL and the default distro. See [WSL — Arch](../wsl/arch.md) for the full setup.
+Install WSL from the GitHub MSI, then Arch Linux as the default distro. See [WSL — Arch](../wsl/arch.md#install) for the full setup.
 
 ```powershell
+wsl --install archlinux --no-launch
+wsl --set-default archlinux
 ```
 
 ## Dotfiles
